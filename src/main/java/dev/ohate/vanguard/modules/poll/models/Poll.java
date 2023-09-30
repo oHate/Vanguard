@@ -1,27 +1,23 @@
-package dev.ohate.vanguard.module.poll.models;
+package dev.ohate.vanguard.modules.poll.models;
 
 import com.google.gson.annotations.SerializedName;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.ReplaceOptions;
 import dev.ohate.vanguard.Vanguard;
 import dev.ohate.vanguard.util.EmbedUtil;
-import dev.ohate.vanguard.util.JsonUtil;
 import dev.ohate.vanguard.util.TimeUtil;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@Getter @Setter
+@Getter
+@Setter
 public class Poll {
 
     public static final int MAX_ANSWERS = 4;
@@ -60,13 +56,17 @@ public class Poll {
         return Vanguard.getInstance().getDatabase().getCollection("polls");
     }
 
-    public void save() {
-        CompletableFuture.runAsync(() -> getCollection().replaceOne(
-                Filters.eq(id),
-                Document.parse(JsonUtil.writeToJson(this)),
-                new ReplaceOptions().upsert(true)
-        ));
+    public boolean hasEnded() {
+        return endsAt - System.currentTimeMillis() <= 0;
     }
+
+//    public void saveAsync() {
+//        CompletableFuture.runAsync(() -> getCollection().replaceOne(
+//                Filters.eq(id),
+//                Document.parse(JsonUtil.writeToJson(this)),
+//                new ReplaceOptions().upsert(true)
+//        ));
+//    }
 
     public Map<Integer, Set<Long>> getRespondentsByAnswer() {
         Map<Integer, Set<Long>> answerToRespondents = new HashMap<>();
@@ -186,18 +186,17 @@ public class Poll {
         }
 
         public Poll build() {
-            if (endsAt == null)
-                throw new IllegalStateException("An end date has not been set for this poll.");
-
             if (question == null)
                 throw new IllegalStateException("A question has not been set for this poll.");
+
+            if (endsAt == null)
+                throw new IllegalStateException("An end date has not been set for this poll.");
 
             if (answers.size() < 2)
                 throw new IllegalStateException("This poll must have at least two answers.");
 
             return new Poll(this);
         }
-
     }
 
 }

@@ -1,10 +1,9 @@
-package dev.ohate.vanguard.module.poll.util;
+package dev.ohate.vanguard.modules.poll.util;
 
-import dev.ohate.vanguard.module.poll.models.NumberEmote;
-import dev.ohate.vanguard.module.poll.models.Poll;
-import dev.ohate.vanguard.module.poll.models.SegmentEmote;
+import dev.ohate.vanguard.modules.poll.models.NumberEmote;
+import dev.ohate.vanguard.modules.poll.models.Poll;
+import dev.ohate.vanguard.modules.poll.models.SegmentEmote;
 import dev.ohate.vanguard.util.EmbedUtil;
-import dev.ohate.vanguard.util.InteractionKey;
 import dev.ohate.vanguard.util.StringUtil;
 import dev.ohate.vanguard.util.TimeUtil;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -14,7 +13,6 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
-import org.bson.types.ObjectId;
 
 import java.util.*;
 
@@ -115,7 +113,7 @@ public class PollUtil {
 
         return builder.append("**Poll By:** <@")
                 .append(poll.getCreatorId()).append(">\n**Poll Ends:** ")
-                .append(TimeUtil.millisToTimestamp(poll.getEndsAt()))
+                .append(poll.hasEnded() ? "`Ended`" : TimeUtil.millisToTimestamp(poll.getEndsAt()))
                 .toString();
     }
 

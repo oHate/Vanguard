@@ -1,9 +1,9 @@
-package dev.ohate.vanguard.module.poll.commands;
+package dev.ohate.vanguard.modules.poll.commands;
 
-import dev.ohate.vanguard.store.cache.PollBuilderCache;
+import dev.ohate.vanguard.modules.poll.handlers.PollBuilderHandler;
+import dev.ohate.vanguard.modules.poll.models.Poll;
+import dev.ohate.vanguard.modules.poll.util.PollUtil;
 import dev.ohate.vanguard.util.Command;
-import dev.ohate.vanguard.module.poll.models.Poll;
-import dev.ohate.vanguard.module.poll.util.PollUtil;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -30,7 +30,7 @@ public class PollCommand extends Command {
         Poll.Builder builder = Poll.builder(event.getMember().getIdLong());
 
         UUID id = UUID.randomUUID();
-        PollBuilderCache.addPollBuilder(id, builder);
+        PollBuilderHandler.getInstance().addPollBuilder(id, builder);
 
         event.replyEmbeds(builder.buildEmbed())
                 .addComponents(PollUtil.getPollBuilderButtons(id))

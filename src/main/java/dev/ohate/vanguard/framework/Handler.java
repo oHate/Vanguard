@@ -15,7 +15,8 @@ public abstract class Handler {
 
     public abstract Module getModule();
 
-    public void initialLoad() {}
+    public void initialLoad() {
+    }
 
     public void saveData() {
         if (!loaded) {

@@ -1,4 +1,4 @@
-package dev.ohate.vanguard.module.poll.models;
+package dev.ohate.vanguard.modules.poll.models;
 
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;

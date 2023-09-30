@@ -27,7 +27,9 @@ public abstract class Module {
     public List<Handler> cachedHandlers = null;
 
     public abstract Framework getFramework();
+
     public abstract String getName();
+
     public abstract String getConfigFileName();
 
     public boolean isEnabled() {
@@ -43,7 +45,8 @@ public abstract class Module {
 
         try {
             return JsonUtil.readFromJson(Files.readString(configFile.toPath()), JsonObject.class);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         return new JsonObject();
     }
@@ -84,7 +87,7 @@ public abstract class Module {
 
                 handler.setLoaded(false);
             } catch (Exception e) {
-                logger.error("Failed to disable " +  getName() + "handler:", e);
+                logger.error("Failed to disable " + getName() + "handler:", e);
             }
         }
     }

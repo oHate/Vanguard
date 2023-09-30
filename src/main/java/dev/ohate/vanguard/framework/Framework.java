@@ -1,6 +1,7 @@
 package dev.ohate.vanguard.framework;
 
 import dev.ohate.vanguard.util.Command;
+import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -16,13 +17,20 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class Framework {
 
-    private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+    @Getter
     private final Logger logger = LoggerFactory.getLogger(getName());
+
+    @Getter
+    private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+
     private final List<Module> enabledModules = new ArrayList<>();
 
     public abstract String getName();
+
     public abstract JDA getJDA();
+
     public abstract List<Module> getModules();
+
     public abstract File getDataFolder();
 
     public void onEnable() {

@@ -1,13 +1,13 @@
-package dev.ohate.vanguard.module.poll;
+package dev.ohate.vanguard.modules.poll;
 
 import dev.ohate.vanguard.Vanguard;
 import dev.ohate.vanguard.framework.Framework;
 import dev.ohate.vanguard.framework.Handler;
 import dev.ohate.vanguard.framework.Module;
-import dev.ohate.vanguard.module.poll.commands.PollCommand;
-import dev.ohate.vanguard.module.poll.handlers.PollBuilderHandler;
-import dev.ohate.vanguard.module.poll.handlers.PollHandler;
-import dev.ohate.vanguard.module.poll.listeners.PollListener;
+import dev.ohate.vanguard.modules.poll.commands.PollCommand;
+import dev.ohate.vanguard.modules.poll.handlers.PollBuilderHandler;
+import dev.ohate.vanguard.modules.poll.handlers.PollHandler;
+import dev.ohate.vanguard.modules.poll.listeners.PollListener;
 import dev.ohate.vanguard.util.Command;
 import lombok.Getter;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;

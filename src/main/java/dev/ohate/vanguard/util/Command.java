@@ -1,13 +1,9 @@
 package dev.ohate.vanguard.util;
 
 import lombok.Getter;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 public abstract class Command extends ListenerAdapter {

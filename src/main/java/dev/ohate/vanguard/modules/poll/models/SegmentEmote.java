@@ -1,4 +1,4 @@
-package dev.ohate.vanguard.module.poll.models;
+package dev.ohate.vanguard.modules.poll.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

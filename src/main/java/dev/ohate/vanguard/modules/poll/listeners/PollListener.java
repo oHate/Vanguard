@@ -1,22 +1,21 @@
-package dev.ohate.vanguard.module.poll.listeners;
+package dev.ohate.vanguard.modules.poll.listeners;
 
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.ReplaceOptions;
-import dev.ohate.vanguard.util.*;
-import dev.ohate.vanguard.module.poll.models.NumberEmote;
-import dev.ohate.vanguard.module.poll.models.Poll;
-import dev.ohate.vanguard.module.poll.util.PollUtil;
-import dev.ohate.vanguard.store.cache.PollBuilderCache;
-import dev.ohate.vanguard.store.cache.PollCache;
+import dev.ohate.vanguard.modules.poll.handlers.PollBuilderHandler;
+import dev.ohate.vanguard.modules.poll.handlers.PollHandler;
+import dev.ohate.vanguard.modules.poll.models.NumberEmote;
+import dev.ohate.vanguard.modules.poll.models.Poll;
+import dev.ohate.vanguard.modules.poll.util.PollUtil;
+import dev.ohate.vanguard.util.Duration;
+import dev.ohate.vanguard.util.EmbedUtil;
+import dev.ohate.vanguard.util.Lang;
+import dev.ohate.vanguard.util.Reply;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import org.bson.Document;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,9 +41,10 @@ public class PollListener extends ListenerAdapter {
     }
 
     private void handlePollButton(ButtonInteractionEvent event) {
-        String[] idSegments = event.getComponentId().split(":");
+        PollHandler handler = PollHandler.getInstance();
 
-        Poll poll = PollCache.getPoll(idSegments[1]);
+        String[] idSegments = event.getComponentId().split(":");
+        Poll poll = handler.getPoll(idSegments[1]);
 
         if (poll == null) {
             Reply.ephemeral(event, Lang.POLL_ENDED);
@@ -59,16 +59,17 @@ public class PollListener extends ListenerAdapter {
                 .build());
 
         poll.getRespondents().put(event.getMember().getIdLong(), index);
-        PollCache.schedulePollUpdate(poll, event.getMessage());
+        handler.schedulePollUpdate(poll, event.getMessage());
     }
 
     private void handlePollBuilderButton(ButtonInteractionEvent event) {
-        String[] idSegments = event.getComponentId().split(":");
+        PollBuilderHandler handler = PollBuilderHandler.getInstance();
 
+        String[] idSegments = event.getComponentId().split(":");
         UUID uuid = UUID.fromString(idSegments[1]);
         String action = idSegments[2];
 
-        Poll.Builder builder = PollBuilderCache.getPollBuilder(uuid);
+        Poll.Builder builder = handler.getPollBuilder(uuid);
 
         if (builder == null) {
             Reply.ephemeral(event, Lang.POLL_BUILDER_EXPIRED);
@@ -112,16 +113,27 @@ public class PollListener extends ListenerAdapter {
                     ));
                 }
 
-                PollCache.addPoll(poll);
+                handler.removePollBuilder(uuid);
 
                 event.getChannel()
                         .sendMessageEmbeds(PollUtil.buildPollEmbed(poll))
                         .addActionRow(buttons)
-                        .queue(message -> Reply.ephemeral(event, EmbedUtil.createBuilder()
-                                .setTitle(":bar_chart: | **Poll Created**")
-                                .setDescription("The poll has been successfully created!")
-                                .build()
-                        ));
+                        .queue(message -> {
+                            poll.setGuildId(message.getGuild().getIdLong());
+                            poll.setChannelId(message.getChannel().getIdLong());
+                            poll.setMessageId(message.getIdLong());
+
+                            PollHandler pollHandler = PollHandler.getInstance();
+
+                            pollHandler.addPoll(poll);
+                            pollHandler.markPollAsDirty(poll);
+
+                            Reply.ephemeral(event, EmbedUtil.createBuilder()
+                                    .setTitle(":bar_chart: | **Poll Created**")
+                                    .setDescription("The poll has been successfully created!")
+                                    .build()
+                            );
+                        });
             }
         }
     }
@@ -136,12 +148,13 @@ public class PollListener extends ListenerAdapter {
     }
 
     public void handlePollBuilderModal(ModalInteractionEvent event) {
-        String[] idSegments = event.getModalId().split(":");
+        PollBuilderHandler handler = PollBuilderHandler.getInstance();
 
+        String[] idSegments = event.getModalId().split(":");
         UUID uuid = UUID.fromString(idSegments[1]);
         String action = idSegments[2];
 
-        Poll.Builder builder = PollBuilderCache.getPollBuilder(uuid);
+        Poll.Builder builder = handler.getPollBuilder(uuid);
 
         if (builder == null) {
             Reply.ephemeral(event, Lang.POLL_BUILDER_EXPIRED);
@@ -167,6 +180,7 @@ public class PollListener extends ListenerAdapter {
                     builder.addAnswer(event.getValue("answer").getAsString());
                 } catch (IllegalStateException e) {
                     Reply.ephemeral(event, EmbedUtil.createError(e.getMessage()));
+                    return;
                 }
             }
         }

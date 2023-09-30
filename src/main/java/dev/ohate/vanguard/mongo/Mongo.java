@@ -1,4 +1,4 @@
-package dev.ohate.vanguard.store.mongo;
+package dev.ohate.vanguard.mongo;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
