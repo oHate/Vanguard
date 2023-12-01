@@ -11,7 +11,6 @@ Vanguard is a multipurpose discord bot that is designed to do many different tas
 
 - [x] Polls
 - [ ] Punishments
-- [x] More module ideas 
 
 ## Contributing
 
